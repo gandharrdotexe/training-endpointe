@@ -1,21 +1,21 @@
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const prisma = require("../config/db");
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
 
 async function registerUser({ name, email, password }) {
-  // TODO: fix this - password stored as plain text (preserved original TODO)
   try {
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: {
         name,
         email,
-        password
+        password: hashedPassword
       }
     });
     return { id: user.id, email: user.email };
   } catch (error) {
-    // If it's a unique constraint error (P2002) for email
     if (error.code === "P2002") {
       const err = new Error("Email already registered");
       err.status = 400;
@@ -36,7 +36,8 @@ async function loginUser({ email, password }) {
     throw error;
   }
 
-  if (user.password !== password) {
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
     const error = new Error("Wrong password");
     error.status = 401;
     throw error;
