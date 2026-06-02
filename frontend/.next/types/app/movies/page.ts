@@ -1,4 +1,4 @@
-// File: D:\enpointe\training\project-root\frontend\app\movies\page.js
+// File: /Users/gandharbagde/MyProjects/training/training/frontend/app/movies/page.js
 import * as entry from '../../../../app/movies/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

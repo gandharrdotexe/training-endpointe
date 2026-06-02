@@ -8,8 +8,8 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    // BUG: no guard and no error handling, can fail silently
-    fetch("http://localhost:5000/api/auth/me", {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+    fetch(`${baseUrl}/api/auth/me`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

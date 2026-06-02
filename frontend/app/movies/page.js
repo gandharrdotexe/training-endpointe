@@ -11,10 +11,9 @@ export default function MoviesPage() {
   const movies = useSelector((state) => state.movies.list);
   const [title, setTitle] = useState("");
   const [year, setYear] = useState("");
-
   useEffect(() => {
-    // BUG: API call in component with weak error handling
-    fetch("http://localhost:5000/api/movies")
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+    fetch(`${baseUrl}/api/movies`)
       .then((res) => res.json())
       .then((data) => {
         dispatch(setMovies(data));
