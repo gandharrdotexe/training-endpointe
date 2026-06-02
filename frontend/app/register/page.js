@@ -3,22 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { login } from "../../lib/api";
-import { useAuth } from "../../context/AuthContext";
+import { register } from "../../lib/api";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
-  const { setUser, setToken } = useAuth();
-  const [email, setEmail] = useState("test@example.com");
-  const [password, setPassword] = useState("123456");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  async function handleLogin(e) {
+  async function handleRegister(e) {
     e.preventDefault();
-    if (!email || !password) {
-      setMessage("Please enter both email and password.");
+    if (!name || !email || !password) {
+      setMessage("All fields are required.");
       setError(true);
       return;
     }
@@ -28,20 +27,18 @@ export default function LoginPage() {
     setError(false);
 
     try {
-      const data = await login({ email, password });
-      if (data.token) {
-        setToken(data.token);
-        setUser(data.user);
-        setMessage("Success! Access granted.");
+      const data = await register({ name, email, password });
+      if (data.id) {
+        setMessage("Registration successful! Redirecting to login...");
         setTimeout(() => {
-          router.push("/dashboard");
-        }, 800);
+          router.push("/login");
+        }, 1500);
       } else {
-        setMessage(data.message || "Invalid credentials.");
+        setMessage(data.message || "Registration failed. Try again.");
         setError(true);
       }
     } catch (err) {
-      setMessage(err.message || "Network error. Try again.");
+      setMessage(err.message || "Something went wrong.");
       setError(true);
     } finally {
       setLoading(false);
@@ -53,24 +50,39 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8 bg-[#161b22] p-8 rounded-2xl border border-[#30363d] shadow-2xl">
         <div>
           <h2 className="mt-2 text-center text-3xl font-extrabold text-[#f0f6fc] tracking-tight">
-            Sign In
+            Create an Account
           </h2>
           <p className="mt-2 text-center text-sm text-[#8b949e]">
             Or{" "}
-            <Link href="/register" className="font-medium text-[#58a6ff] hover:text-[#79c0ff] transition-colors">
-              create a new account
+            <Link href="/login" className="font-medium text-[#58a6ff] hover:text-[#79c0ff] transition-colors">
+              sign in to your existing account
             </Link>
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+        <form className="mt-8 space-y-6" onSubmit={handleRegister}>
           <div className="space-y-4 rounded-md shadow-sm">
             <div>
-              <label htmlFor="email-address-input" className="sr-only">
+              <label htmlFor="name-input" className="sr-only">
+                Full Name
+              </label>
+              <input
+                id="name-input"
+                name="name"
+                type="text"
+                required
+                className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#30363d] placeholder-[#8b949e] text-[#f0f6fc] bg-[#0d1117] focus:outline-none focus:ring-2 focus:ring-[#58a6ff] focus:border-transparent sm:text-sm transition-all"
+                placeholder="Full name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="email-input" className="sr-only">
                 Email address
               </label>
               <input
-                id="email-address-input"
+                id="email-input"
                 name="email"
                 type="email"
                 required
@@ -81,11 +93,11 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <label htmlFor="password-input-field" className="sr-only">
+              <label htmlFor="password-input" className="sr-only">
                 Password
               </label>
               <input
-                id="password-input-field"
+                id="password-input"
                 name="password"
                 type="password"
                 required
@@ -104,10 +116,10 @@ export default function LoginPage() {
               className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white ${
                 loading
                   ? "bg-[#1f6feb] opacity-70 cursor-not-allowed"
-                  : "bg-[#1f6feb] hover:bg-[#388bfd] focus:ring-2 focus:ring-[#388bfd]"
+                  : "bg-[#238636] hover:bg-[#2ea043] focus:ring-2 focus:ring-[#2ea043]"
               } focus:outline-none transition-all shadow-md`}
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? "Registering..." : "Sign Up"}
             </button>
           </div>
         </form>

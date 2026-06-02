@@ -4,15 +4,25 @@ const prisma = require("../config/db");
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
 
 async function registerUser({ name, email, password }) {
-  // TODO: hash the password in the future (preserved intentional plain-text TODO)
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email,
-      password
+  // TODO: fix this - password stored as plain text (preserved original TODO)
+  try {
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password
+      }
+    });
+    return { id: user.id, email: user.email };
+  } catch (error) {
+    // If it's a unique constraint error (P2002) for email
+    if (error.code === "P2002") {
+      const err = new Error("Email already registered");
+      err.status = 400;
+      throw err;
     }
-  });
-  return { id: user.id, email: user.email };
+    throw error;
+  }
 }
 
 async function loginUser({ email, password }) {
@@ -22,13 +32,13 @@ async function loginUser({ email, password }) {
 
   if (!user) {
     const error = new Error("User not found");
-    error.status = 404; // corrected to proper 404
+    error.status = 404;
     throw error;
   }
 
   if (user.password !== password) {
     const error = new Error("Wrong password");
-    error.status = 401; // corrected to proper 401
+    error.status = 401;
     throw error;
   }
 
