@@ -46,15 +46,16 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0d1117] px-4 py-12 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-[#161b22] p-8 rounded-2xl border border-[#30363d] shadow-2xl">
+    <div className="min-h-[75vh] flex items-center justify-center bg-black px-4 py-12 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-[#0c0c0c] p-8 rounded-2xl border border-[#564d4d]/40 shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-[#db0000] to-[#831010]" />
         <div>
-          <h2 className="mt-2 text-center text-3xl font-extrabold text-[#f0f6fc] tracking-tight">
+          <h2 className="mt-2 text-center text-3xl font-extrabold text-white tracking-tight">
             Create an Account
           </h2>
-          <p className="mt-2 text-center text-sm text-[#8b949e]">
+          <p className="mt-2 text-center text-sm text-gray-400">
             Or{" "}
-            <Link href="/login" className="font-medium text-[#58a6ff] hover:text-[#79c0ff] transition-colors">
+            <Link href="/login" className="font-medium text-[#db0000] hover:text-white transition-colors no-underline">
               sign in to your existing account
             </Link>
           </p>
@@ -71,7 +72,7 @@ export default function RegisterPage() {
                 name="name"
                 type="text"
                 required
-                className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#30363d] placeholder-[#8b949e] text-[#f0f6fc] bg-[#0d1117] focus:outline-none focus:ring-2 focus:ring-[#58a6ff] focus:border-transparent sm:text-sm transition-all"
+                className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#564d4d] placeholder-gray-500 text-white bg-black focus:outline-none focus:ring-1 focus:ring-[#db0000] focus:border-[#db0000] sm:text-sm transition-all"
                 placeholder="Full name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -86,7 +87,7 @@ export default function RegisterPage() {
                 name="email"
                 type="email"
                 required
-                className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#30363d] placeholder-[#8b949e] text-[#f0f6fc] bg-[#0d1117] focus:outline-none focus:ring-2 focus:ring-[#58a6ff] focus:border-transparent sm:text-sm transition-all"
+                className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#564d4d] placeholder-gray-500 text-white bg-black focus:outline-none focus:ring-1 focus:ring-[#db0000] focus:border-[#db0000] sm:text-sm transition-all"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -101,7 +102,7 @@ export default function RegisterPage() {
                 name="password"
                 type="password"
                 required
-                className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#30363d] placeholder-[#8b949e] text-[#f0f6fc] bg-[#0d1117] focus:outline-none focus:ring-2 focus:ring-[#58a6ff] focus:border-transparent sm:text-sm transition-all"
+                className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#564d4d] placeholder-gray-500 text-white bg-black focus:outline-none focus:ring-1 focus:ring-[#db0000] focus:border-[#db0000] sm:text-sm transition-all"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -115,8 +116,8 @@ export default function RegisterPage() {
               disabled={loading}
               className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white ${
                 loading
-                  ? "bg-[#1f6feb] opacity-70 cursor-not-allowed"
-                  : "bg-[#238636] hover:bg-[#2ea043] focus:ring-2 focus:ring-[#2ea043]"
+                  ? "bg-[#db0000] opacity-70 cursor-not-allowed"
+                  : "bg-[#db0000] hover:bg-[#831010] focus:ring-2 focus:ring-[#db0000]"
               } focus:outline-none transition-all shadow-md`}
             >
               {loading ? "Registering..." : "Sign Up"}
@@ -128,8 +129,8 @@ export default function RegisterPage() {
           <div
             className={`p-3 rounded-lg text-center text-sm font-medium border ${
               error
-                ? "bg-[#f8514915] border-[#f85149] text-[#f85149]"
-                : "bg-[#56d36415] border-[#347d39] text-[#56d364]"
+                ? "bg-[#db0000]/10 border-[#db0000] text-[#db0000]"
+                : "bg-green-950/20 border-green-800 text-green-400"
             }`}
           >
             {message}
