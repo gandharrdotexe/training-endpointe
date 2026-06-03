@@ -79,7 +79,7 @@ export default function MoviesPage() {
       </div>
 
       {/* Grid Layout of Movies */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {movies.map((movie) => (
           <Link href={`/movies/${movie.id}`} key={movie.id || `${movie.title}-${movie.year}`}>
             <MovieCard key={movie.id || `${movie.title}-${movie.year}`} movie={movie} />

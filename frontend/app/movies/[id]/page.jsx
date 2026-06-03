@@ -142,7 +142,7 @@ export default function MovieDetailPage({ params }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-[#0c0c0c] border border-[#564d4d]/40 rounded-xl p-8 shadow-2xl relative overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-[#0c0c0c] border border-[#564d4d]/40 rounded-xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 left-0 w-1.5 h-full bg-[#db0000]" />
 
         {isEditing ? (
@@ -193,17 +193,17 @@ export default function MovieDetailPage({ params }) {
               </div>
             </div>
 
-            <div className="flex gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <button
                 type="submit"
-                className="bg-[#db0000] hover:bg-[#831010] text-white font-semibold px-6 py-2 rounded-lg text-sm transition-all"
+                className="w-full sm:w-auto bg-[#db0000] hover:bg-[#831010] text-white font-semibold px-6 py-2 rounded-lg text-sm transition-all"
               >
                 Save Changes
               </button>
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="bg-transparent border border-[#564d4d] text-gray-400 hover:text-white px-6 py-2 rounded-lg text-sm transition-all"
+                className="w-full sm:w-auto bg-transparent border border-[#564d4d] text-gray-400 hover:text-white px-6 py-2 rounded-lg text-sm transition-all"
               >
                 Cancel
               </button>
@@ -241,16 +241,16 @@ export default function MovieDetailPage({ params }) {
                 )}
               </div>
 
-              <div className="flex gap-3 pt-4 border-t border-[#564d4d]/20">
+              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-[#564d4d]/20">
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="bg-[#db0000] hover:bg-[#831010] text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-all shadow-md shadow-[#db0000]/10"
+                  className="w-full sm:w-auto bg-[#db0000] hover:bg-[#831010] text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-all shadow-md shadow-[#db0000]/10"
                 >
                   Edit Details
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="bg-transparent border border-[#564d4d] text-gray-400 hover:text-white hover:border-red-600 px-6 py-2.5 rounded-lg text-sm transition-all"
+                  className="w-full sm:w-auto bg-transparent border border-[#564d4d] text-gray-400 hover:text-white hover:border-red-600 px-6 py-2.5 rounded-lg text-sm transition-all"
                 >
                   Delete Title
                 </button>
