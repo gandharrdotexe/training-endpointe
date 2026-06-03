@@ -66,11 +66,22 @@ async function sync(req, res, next) {
   }
 }
 
+async function getMovie(req, res, next) {
+  try {
+    const { id } = req.params;
+    const movie = await movieService.getMovieById(id);
+    res.status(200).json(movie);
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getDummyMovies,
   getMovies,
   create,
   update,
   remove,
-  sync
+  sync,
+  getMovie
 };

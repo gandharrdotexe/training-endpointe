@@ -5,20 +5,35 @@ import { useDispatch, useSelector } from "react-redux";
 import MovieCard from "../../components/MovieCard";
 import { addMovie, setMovies } from "../../store/slices/movieSlice";
 import { createMovie } from "../../lib/api";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../../context/AuthContext";
+import Link from "next/link";
 
 export default function MoviesPage() {
   const dispatch = useDispatch();
+  const { token } = useAuth();
+  const router = useRouter();
   const movies = useSelector((state) => state.movies.list);
   const [title, setTitle] = useState("");
   const [year, setYear] = useState("");
+
   useEffect(() => {
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
     fetch(`${baseUrl}/api/movies`)
       .then((res) => res.json())
       .then((data) => {
         dispatch(setMovies(data));
       });
-  }, [dispatch]);
+  }, [dispatch, token, router]);
+
+  if (!token) {
+    return null;
+  }
 
   async function handleAddMovie() {
     const payload = { title, year, genre: "Drama", description: "Added quickly" };
@@ -66,7 +81,10 @@ export default function MoviesPage() {
       {/* Grid Layout of Movies */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {movies.map((movie) => (
-          <MovieCard key={movie.id || `${movie.title}-${movie.year}`} movie={movie} />
+          <Link href={`/movies/${movie.id}`} key={movie.id || `${movie.title}-${movie.year}`}>
+            <MovieCard key={movie.id || `${movie.title}-${movie.year}`} movie={movie} />
+          </Link>
+          
         ))}
       </div>
     </div>

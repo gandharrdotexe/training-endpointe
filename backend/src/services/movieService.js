@@ -31,6 +31,18 @@ async function updateMovie(id, { title, year, genre, description }) {
   });
 }
 
+async function getMovieById(id) {
+  const movie = await prisma.movie.findUnique({
+    where: { id: Number(id) }
+  });
+  if (!movie) {
+    const error = new Error("Movie not found");
+    error.status = 404;
+    throw error;
+  }
+  return movie;
+}
+
 async function deleteMovie(id) {
   return await prisma.movie.delete({
     where: { id: Number(id) }
@@ -41,5 +53,6 @@ module.exports = {
   getAllMovies,
   createMovie,
   updateMovie,
-  deleteMovie
+  deleteMovie,
+  getMovieById
 };
