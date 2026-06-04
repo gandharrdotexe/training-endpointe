@@ -18,6 +18,7 @@ export default function MoviesPage() {
   // Quick Add state
   const [title, setTitle] = useState("");
   const [year, setYear] = useState("");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // OMDb Search state
   const [omdbQuery, setOmdbQuery] = useState("");
@@ -44,12 +45,29 @@ export default function MoviesPage() {
     return null;
   }
 
-  async function handleAddMovie() {
-    const payload = { title, year, genre: "Drama", description: "Added quickly" };
-    const created = await createMovie(payload);
-    dispatch(addMovie(created));
-    setTitle("");
-    setYear("");
+  async function handleAddMovie(e) {
+    if (e) e.preventDefault();
+    if (!title.trim()) return;
+
+    try {
+      const payload = {
+        title: title.trim(),
+        year: year ? Number(year) : null,
+        genre: "Drama",
+        description: "Added quickly"
+      };
+      const created = await createMovie(payload);
+      if (created && created.id) {
+        dispatch(addMovie(created));
+        setTitle("");
+        setYear("");
+        setIsAddModalOpen(false);
+      } else {
+        alert("Failed to add movie.");
+      }
+    } catch (err) {
+      alert("Error adding movie.");
+    }
   }
 
   // Trigger search automatically as the user types (debounced)
@@ -107,37 +125,17 @@ export default function MoviesPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight text-white mb-1">Explore Titles</h1>
           <p className="text-gray-400 text-sm">Discover and contribute to the ENFLIX streaming catalog.</p>
         </div>
-      </div>
-
-      {/* Quick Add Movie Panel */}
-      <div className="bg-[#0c0c0c] border border-[#564d4d]/40 rounded-xl p-6 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-1 h-full bg-[#db0000]" />
-        <h2 className="text-lg font-bold text-white mb-4">Quick Add Movie</h2>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <input
-            className="flex-1 bg-black border border-[#564d4d] focus:border-[#db0000] focus:ring-1 focus:ring-[#db0000] text-white px-4 py-2.5 rounded-lg text-sm transition-all outline-none placeholder-gray-500"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter movie title..."
-          />
-          <input
-            className="w-full sm:w-32 bg-black border border-[#564d4d] focus:border-[#db0000] focus:ring-1 focus:ring-[#db0000] text-white px-4 py-2.5 rounded-lg text-sm transition-all outline-none placeholder-gray-500"
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
-            placeholder="Release year"
-          />
-          <button
-            className="bg-[#db0000] hover:bg-[#831010] text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-all duration-300 transform active:scale-95 shadow-lg shadow-[#db0000]/10"
-            onClick={handleAddMovie}
-          >
-            Add Title
-          </button>
-        </div>
+        <button
+          onClick={() => setIsAddModalOpen(true)}
+          className="self-start sm:self-auto bg-[#db0000] hover:bg-[#831010] text-white font-semibold px-4 py-2.5 rounded-lg text-xs transition-all duration-300 transform active:scale-95 shadow-md shadow-[#db0000]/10"
+        >
+          + Quick Add
+        </button>
       </div>
 
       {/* OMDb Search & Import Panel */}
@@ -209,6 +207,65 @@ export default function MoviesPage() {
           
         ))}
       </div>
+
+      {/* Quick Add Modal */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm px-4">
+          <div className="bg-[#0c0c0c] border border-[#564d4d]/40 rounded-xl p-6 shadow-2xl relative max-w-md w-full overflow-hidden space-y-6">
+            <div className="absolute top-0 left-0 w-full h-1 bg-[#db0000]" />
+            
+            <div>
+              <h2 className="text-xl font-bold text-white">Quick Add Movie</h2>
+              <p className="text-gray-400 text-xs mt-1">Create a new catalog entry directly in the database.</p>
+            </div>
+
+            <form onSubmit={handleAddMovie} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Movie Title</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Interstellar"
+                  className="w-full bg-black border border-[#564d4d] focus:border-[#db0000] focus:ring-1 focus:ring-[#db0000] text-white px-4 py-2.5 rounded-lg text-sm outline-none placeholder-gray-500"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Release Year</label>
+                <input
+                  type="number"
+                  placeholder="e.g. 2014"
+                  className="w-full bg-black border border-[#564d4d] focus:border-[#db0000] focus:ring-1 focus:ring-[#db0000] text-white px-4 py-2.5 rounded-lg text-sm outline-none placeholder-gray-500"
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                />
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-[#564d4d]/20">
+                <button
+                  type="submit"
+                  className="w-full sm:flex-1 bg-[#db0000] hover:bg-[#831010] text-white font-semibold py-2.5 rounded-lg text-sm transition-all"
+                >
+                  Add Title
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsAddModalOpen(false);
+                    setTitle("");
+                    setYear("");
+                  }}
+                  className="w-full sm:flex-1 bg-transparent border border-[#564d4d] text-gray-400 hover:text-white py-2.5 rounded-lg text-sm transition-all text-center"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
