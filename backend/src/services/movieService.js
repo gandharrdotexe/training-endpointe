@@ -1,7 +1,30 @@
 const prisma = require("../config/db");
 
-async function getAllMovies() {
-  // TODO: add pagination in the future (preserved intentional TODO)
+async function getAllMovies({ page, limit } = {}) {
+  // TODO: add pagination in the future (preserved intentional TODO) (Zala bhaii)
+  if (page !== undefined || limit !== undefined) {
+    const pageNum = parseInt(page) || 1;
+    const limitNum = parseInt(limit) || 8;
+    const skip = (pageNum - 1) * limitNum;
+
+    const [movies, total] = await Promise.all([
+      prisma.movie.findMany({
+        skip,
+        take: limitNum,
+        orderBy: { createdAt: "desc" }
+      }),
+      prisma.movie.count()
+    ]);
+
+    return {
+      movies,
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum)
+    };
+  }
+
   return await prisma.movie.findMany({
     orderBy: { createdAt: "desc" }
   });

@@ -20,6 +20,12 @@ export default function MoviesPage() {
   const [year, setYear] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalMovies, setTotalMovies] = useState(0);
+  const limit = 8;
+
   // OMDb Search state
   const [omdbQuery, setOmdbQuery] = useState("");
   const [omdbResults, setOmdbResults] = useState([]);
@@ -27,19 +33,30 @@ export default function MoviesPage() {
   const [omdbError, setOmdbError] = useState("");
   const [addedIds, setAddedIds] = useState(new Set());
 
+  const fetchPage = (pageNum) => {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+    fetch(`${baseUrl}/api/movies?page=${pageNum}&limit=${limit}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch movies");
+        return res.json();
+      })
+      .then((data) => {
+        dispatch(setMovies(data.movies));
+        setTotalPages(data.totalPages);
+        setTotalMovies(data.total);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch movies page:", err);
+      });
+  };
+
   useEffect(() => {
     if (!token) {
       router.push("/login");
       return;
     }
-
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
-    fetch(`${baseUrl}/api/movies`)
-      .then((res) => res.json())
-      .then((data) => {
-        dispatch(setMovies(data));
-      });
-  }, [dispatch, token, router]);
+    fetchPage(currentPage);
+  }, [dispatch, token, router, currentPage]);
 
   if (!token) {
     return null;
@@ -58,7 +75,11 @@ export default function MoviesPage() {
       };
       const created = await createMovie(payload);
       if (created && created.id) {
-        dispatch(addMovie(created));
+        if (currentPage === 1) {
+          fetchPage(1);
+        } else {
+          setCurrentPage(1);
+        }
         setTitle("");
         setYear("");
         setIsAddModalOpen(false);
@@ -110,7 +131,13 @@ export default function MoviesPage() {
         externalId: item.imdbID
       };
       const created = await createMovie(payload);
-      dispatch(addMovie(created));
+      if (created && created.id) {
+        if (currentPage === 1) {
+          fetchPage(1);
+        } else {
+          setCurrentPage(1);
+        }
+      }
       
       // Mark as added to prevent duplicate clicks
       setAddedIds((prev) => {
@@ -122,6 +149,22 @@ export default function MoviesPage() {
       alert("Failed to save movie to database.");
     }
   }
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+    let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    let end = Math.min(totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  };
 
   return (
     <div className="space-y-8">
@@ -207,6 +250,41 @@ export default function MoviesPage() {
           
         ))}
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pt-8 mt-4 border-t border-[#564d4d]/20">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1.5 rounded-lg border border-[#564d4d]/40 text-sm font-semibold text-gray-400 hover:text-white hover:border-white transition-all disabled:opacity-30 disabled:hover:text-gray-400 disabled:hover:border-[#564d4d]/40 disabled:cursor-not-allowed"
+          >
+            &larr; Prev
+          </button>
+          
+          {getPageNumbers().map((pageNum) => (
+            <button
+              key={pageNum}
+              onClick={() => setCurrentPage(pageNum)}
+              className={`w-9 h-9 rounded-lg border text-sm font-bold transition-all ${
+                currentPage === pageNum
+                  ? "bg-[#db0000] border-[#db0000] text-white shadow-md shadow-[#db0000]/20"
+                  : "bg-black border-[#564d4d]/40 text-gray-400 hover:text-white hover:border-white"
+              }`}
+            >
+              {pageNum}
+            </button>
+          ))}
+          
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1.5 rounded-lg border border-[#564d4d]/40 text-sm font-semibold text-gray-400 hover:text-white hover:border-white transition-all disabled:opacity-30 disabled:hover:text-gray-400 disabled:hover:border-[#564d4d]/40 disabled:cursor-not-allowed"
+          >
+            Next &rarr;
+          </button>
+        </div>
+      )}
 
       {/* Quick Add Modal */}
       {isAddModalOpen && (

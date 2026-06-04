@@ -15,8 +15,9 @@ async function getDummyMovies(req, res, next) {
 
 async function getMovies(req, res, next) {
   try {
-    const movies = await movieService.getAllMovies();
-    res.status(200).json(movies);
+    const { page, limit } = req.query;
+    const result = await movieService.getAllMovies({ page, limit });
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }
@@ -47,7 +48,7 @@ async function remove(req, res, next) {
   try {
     const { id } = req.params;
     await movieService.deleteMovie(id);
-    res.status(201).json({ message: "Deleted" }); // Preserved intentional status code 201 for delete
+    res.status(201).json({ message: "Deleted" }); // Preserved intentional status code 201 for delete (kardiyaaa)
   } catch (error) {
     next(error);
   }
