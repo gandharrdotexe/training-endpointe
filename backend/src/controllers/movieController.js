@@ -24,8 +24,8 @@ async function getMovies(req, res, next) {
 
 async function create(req, res, next) {
   try {
-    const { title, year, genre, description } = req.body;
-    const movie = await movieService.createMovie({ title, year, genre, description });
+    const { title, year, genre, description, externalId } = req.body;
+    const movie = await movieService.createMovie({ title, year, genre, description, externalId });
     res.status(200).json(movie); // Preserved intentional status code 200 for create
   } catch (error) {
     next(error);
@@ -76,6 +76,19 @@ async function getMovie(req, res, next) {
   }
 }
 
+async function searchExternal(req, res, next) {
+  try {
+    const { query } = req.query;
+    if (!query) {
+      return res.status(400).json({ message: "Query parameter is required" });
+    }
+    const results = await omdbService.searchMovies(query);
+    res.status(200).json(results);
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getDummyMovies,
   getMovies,
@@ -83,5 +96,6 @@ module.exports = {
   update,
   remove,
   sync,
-  getMovie
+  getMovie,
+  searchExternal
 };

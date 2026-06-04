@@ -7,14 +7,35 @@ async function getAllMovies() {
   });
 }
 
-async function createMovie({ title, year, genre, description }) {
-  // TODO: fix this - no validation (preserved intentional TODO)
+async function createMovie({ title, year, genre, description, externalId }) {
+  if (!title?.trim()) {
+    throw new Error("Title is required");
+  }
+
+  let parsedYear = null;
+
+  if (year !== undefined && year !== null && year !== "") {
+    parsedYear = Number(year);
+
+    if (Number.isNaN(parsedYear)) {
+      throw new Error("Year must be a number");
+    }
+
+    if (
+      parsedYear < 1888 ||
+      parsedYear > new Date().getFullYear()
+    ) {
+      throw new Error("Invalid movie year");
+    }
+  }
+
   return await prisma.movie.create({
     data: {
-      title,
-      year: Number(year),
+      title: title.trim(),
+      year: parsedYear,
       genre,
-      description
+      description,
+      externalId
     }
   });
 }

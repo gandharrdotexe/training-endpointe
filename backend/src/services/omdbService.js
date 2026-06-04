@@ -27,6 +27,21 @@ async function syncMoviesFromOmdb(keyword = "batman") {
   };
 }
 
+async function searchMovies(query) {
+  const apiKey = process.env.OMDB_API_KEY || "demo";
+  const url = `https://www.omdbapi.com/?apikey=${apiKey}&s=${query}`;
+  
+  const response = await fetch(url);
+  const data = await response.json();
+  
+  if (data.Response === "False") {
+    return [];
+  }
+  
+  return data.Search || [];
+}
+
 module.exports = {
-  syncMoviesFromOmdb
+  syncMoviesFromOmdb,
+  searchMovies
 };

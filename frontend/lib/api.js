@@ -31,3 +31,8 @@ export async function register(payload) {
   });
   return res.json();
 }
+
+export async function searchExternalMovies(query) {
+  const res = await fetch(`${BASE_URL}/api/movies/search-external?query=${encodeURIComponent(query)}`);
+  return res.json();
+}
